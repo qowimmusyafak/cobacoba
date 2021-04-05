@@ -1,0 +1,156 @@
+---
+title: "Tutorial EBImage"
+author: "Qowim Musyafak (200605110137) / UIN Maulana Malik Ibrahim Malang TI-A Linear Algebra / Dosen Pembimbing Prof.Dr.Suhartono, M.Kom"
+date: "04 April 2021"
+output:  
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: 
+      collapsed: true
+      smooth_scroll: true 
+---
+```{r}
+
+```
+
+## Tahap Awal 
+\a
+### Menginstall package EBImage  
+
+Langkah ini adalah langkah yang wajib dilakukan agar fungsi dari EBImage itu dapat diakses dengan R Studio.
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("EBImage")
+```
+
+
+## Tahap Persiapan
+
+### Men-set lokasi kerja, memanggil package EBImage, reading image {.tabset}
+
+#### Set Lokasi
+
+Tahap ini adalah tahap dimana kita mengatur lokasi tempat gambar yang akan dieksekusi berada (biasanya satu folder dalam file project).
+```{r}
+#set lokasi kerja
+setwd("C:/Users/DELL/Documents/R/EBImage")
+```
+
+#### Memanggil EBImage
+
+Memanggil package yang sudah diinstall di tahap 1, yaitu package EBImage.
+
+```{r}
+#memanggi package
+library(EBImage)
+```
+
+#### Reading Image
+
+Dan yang terakhir, kita perlu melakukan assign (import)pada fungsi readImage dengan judul photo yang sudah ditaruh di folder set kerja dan memberinya nama misal Image. 
+```{r}
+Image <- readImage('Greenview.jpg')
+```
+
+## Tahap Percobaan
+
+### Menampilkan Gambar, Sifat Gambar, dan Histogram Gambar {.tabset}
+
+#### Menampilkan Gambar
+
+Disini adalah cara untuk menampilkan file asli dari gambar yang sudah diimport ke dalam project kita.
+```{r}
+display(Image) 
+```
+
+#### Sifat Gambar
+
+Disini adalah cara untuk menampilkan sifat dari gambar yang sudah diimport. Adapun sifat dari gambar itu berupa spesifikasi gambar dan spesifikasi berupa matriks.
+```{r}
+print(Image)
+```
+
+#### Histogram Gambar
+
+Histogram gamabr adalah suatu grafik yang akan menahistmpilkan banyak hal bisa berupa kecerahan (brightness), kontas (contrast), warna (color) dari sebuah gambar.
+```{r}
+hist(Image)
+```
+
+## Tahap Akhir
+
+Tahap ini adalah tahap dimana kita melakukan pengolahan terhadap gambar agar menghasilkan output yang diinginkan.
+
+### Brightness
+
+```{r}
+Image1 <- Image + 0.2
+Image2 <- Image - 0.2
+par(mfrow= c(1,2))
+plot(Image1)
+plot(Image2)
+```
+
+### Adjusting Contrast
+
+```{r}
+Image3 <- Image * 0.5
+Image4 <- Image * 2
+par(mfrow= c(1,2))
+plot(Image3)
+plot(Image4)
+```
+
+### Gamma Correction
+
+```{r}
+Image5 <- Image ^ 2
+Image6 <- Image ^ 0.7
+par(mfrow= c(1,2))
+plot(Image5)
+plot(Image6)
+```
+
+### Cropping
+
+```{r}
+display(Image[2560:1440, 700:500,])
+```
+
+### Spatial Transformation
+
+```{r}
+Imagetr <- translate(rotate(Image, 45), c(50, 0))
+display(Imagetr)
+```
+
+### Color Management 
+
+```{r}
+colorMode(Image) <- Grayscale
+display(Image)
+print(Image)
+colorMode(Image) <- Color
+display(Image)
+```
+
+### Filtering {.tabset}
+
+#### Contoh 1
+```{r}
+fHigh <- matrix(1, nc = 3, nr = 3)
+fHigh[2, 2] <- -8
+Image.fHigh <- filter2(Image, fHigh)
+display(Image.fHigh)
+```
+
+#### Contoh 2
+```{r}
+fLow <- makeBrush(21, shape= 'disc', step=FALSE)^2
+fLow <- fLow/sum(fLow)
+Image.fLow <- filter2(Image, fLow)
+display(Image.fLow)
+```
+
